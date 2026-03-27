@@ -63,4 +63,33 @@ class PollsState extends ChangeNotifier {
       return Result.failure('Une erreur est survenue');
     }
   }
+
+  Future<void> fetchPolls() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${Configs.baseUrl}/polls'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          // On envoie le token s'il est disponible
+          if (_token != null) HttpHeaders.authorizationHeader: 'Bearer $_token',
+        },
+      );
+
+      if (response.statusCode == HttpStatus.ok) {
+        // 1. On décode la réponse en liste de dictionnaires
+        final List<dynamic> jsonList = json.decode(response.body);
+        
+        // 2. On transforme chaque dictionnaire en objet Poll
+        _polls = jsonList.map((json) => Poll.fromJson(json)).toList();
+        
+        // 3. On prévient l'interface que la liste est prête !
+        notifyListeners();
+      } else {
+        print('Erreur serveur : ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erreur de connexion : $e');
+    }
+  }
+  
 }

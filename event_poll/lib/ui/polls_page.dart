@@ -2,34 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../states/polls_state.dart';
 
-class PollsPage extends StatelessWidget {
+class PollsPage extends StatefulWidget {
   const PollsPage({super.key});
 
   @override
+  State<PollsPage> createState() => _PollsPageState();
+}
+
+class _PollsPageState extends State<PollsPage> {
+  
+  @override
+  void initState() {
+    super.initState();
+    // 👇 On demande à PollsState de charger les données dès l'ouverture de la page !
+    // Le future.microtask permet d'attendre que la page soit bien construite avant d'appeler le provider.
+    Future.microtask(() => context.read<PollsState>().fetchPolls());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // On écoute les changements de PollsState
     var pollsState = context.watch<PollsState>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Événements')),
-      body: ListView.builder(
-        itemCount: pollsState.polls.length,
-        itemBuilder: (context, index) {
-          var poll = pollsState.polls[index];
-          return ListTile(
-            title: Text(poll.name), // Adapte selon les propriétés de ton modèle Poll
-            onTap: () {
-              // 1. On définit le sondage actuel
-              context.read<PollsState>().setCurrentPoll(poll);
-              // 2. On navigue vers la page de détail
-              Navigator.pushNamed(context, '/poll'); 
-            },
-          );
-        },
-      ),
-      // Un bouton flottant pour créer un nouveau sondage
+      
+      // 👇 On vérifie si la liste est vide pour afficher un message
+      body: pollsState.polls.isEmpty
+          ? const Center(child: Text('Aucun événement trouvé ou en cours de chargement...'))
+          : ListView.builder(
+              itemCount: pollsState.polls.length,
+              itemBuilder: (context, index) {
+                var poll = pollsState.polls[index];
+                return ListTile(
+                  title: Text(poll.name),
+                  subtitle: Text(poll.description), // 👈 On peut même afficher la description
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.read<PollsState>().setCurrentPoll(poll);
+                    Navigator.pushNamed(context, '/poll'); 
+                  },
+                );
+              },
+            ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Pour une création, on vide le sondage actuel
           context.read<PollsState>().setCurrentPoll(null);
           Navigator.pushNamed(context, '/poll_edit');
         },

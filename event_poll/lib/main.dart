@@ -1,6 +1,11 @@
 import 'package:event_poll/states/auth_state.dart';
 import 'package:event_poll/states/polls_state.dart';
 import 'package:event_poll/ui/login_page.dart';
+import 'package:event_poll/ui/polls_page.dart';      // 👈 Nouvel import
+import 'package:event_poll/ui/poll_page.dart';       // 👈 Nouvel import
+import 'package:event_poll/ui/poll_edit_page.dart';  // 👈 Nouvel import
+import 'package:event_poll/ui/signup_page.dart';     // 👈 Nouvel import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -42,19 +47,15 @@ class App extends StatelessWidget {
       routes: {
         '/polls': (context) => const AppScaffold(
               title: 'Événements',
-              body: Placeholder(child: Center(child: Text('POLLS'))),
+              body: PollsPage(), // 👈 Remplacé !
             ),
-        '/polls/create': (context) => const AppScaffold(
-              title: 'Ajouter un événement',
-              body: Placeholder(child: Center(child: Text('POLLS_CREATE'))),
-            ),
-        '/polls/detail': (context) => AppScaffold(
+        '/poll': (context) => const AppScaffold(
               title: 'Événement',
-              body: Placeholder(child: Center(child: Text('POLLS_DETAIL'))),
+              body: PollPage(), // 👈 Remplacé !
             ),
-        '/polls/update': (context) => AppScaffold(
+        '/poll_edit': (context) => const AppScaffold(
               title: 'Modifier un événement',
-              body: Placeholder(child: Center(child: Text('POLLS_UPDATE'))),
+              body: PollEditPage(), // 👈 Remplacé !
             ),
         '/login': (context) => const AppScaffold(
               title: 'Connexion',
@@ -62,7 +63,7 @@ class App extends StatelessWidget {
             ),
         '/signup': (context) => const AppScaffold(
               title: 'Inscription',
-              body: Placeholder(child: Center(child: Text('SIGNUP'))),
+              body: SignupPage(), // 👈 Remplacé !
             ),
       },
     );
